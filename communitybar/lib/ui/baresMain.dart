@@ -42,7 +42,6 @@ class _BaresMainState extends State<BaresMain> {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               Bar bar = snapshot.data!;
-              // Aquí construyes tu widget usando la información de `bar`
             } else if (snapshot.hasError) {
               return Center(child: Text("${snapshot.error}"));
             }

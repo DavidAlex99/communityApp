@@ -40,15 +40,23 @@ class _MainPageState extends State<MainPage> {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               List<Bar> bars = snapshot.data!;
+
+              // Aplana todas las imágenes de todos los bares en una lista única
+              List<Poster> posters = bars.expand((bar) => bar.poster).toList();
+
               return Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: GridView.count(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                  children: bars.map((bar) {
-                    return _buildGridItem(bar.poster[0].url, bar.name, context);
-                  }).toList(),
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                  ),
+                  itemCount: posters.length,
+                  itemBuilder: (context, index) {
+                    return _buildGridItem(
+                        posters[index].url, posters[index].namePhoto, context);
+                  },
                 ),
               );
             } else if (snapshot.hasError) {
@@ -61,16 +69,12 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _buildGridItem(String imageUrl, String barName, BuildContext context) {
+  Widget _buildGridItem(
+      String imageUrl, String namePhoto, BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navega a BaresMain cuando se toca la imagen
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BaresMain(barName: barName),
-          ),
-        );
+        // Aquí, la navegación puede ser un poco diferente ya que estás tratando con una imagen y no con un bar completo
+        // Tal vez quieras navegar a una vista detallada de la imagen, o simplemente quitar el GestureDetector si no quieres ninguna acción al tocar la imagen
       },
       child: Image.network(imageUrl, fit: BoxFit.cover),
     );
