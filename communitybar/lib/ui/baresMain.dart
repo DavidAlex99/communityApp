@@ -2,52 +2,46 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class BaresMain extends StatefulWidget {
-  final String barName;
+class BaresMain extends StatelessWidget {
+  final Bar bar;
+  final String selectedImageUrl;
 
-  BaresMain({required this.barName});
-
-  @override
-  _BaresMainState createState() => _BaresMainState();
-}
-
-class _BaresMainState extends State<BaresMain> {
-  late Future<Bar> futureBar;
-
-  @override
-  void initState() {
-    super.initState();
-    futureBar = fetchBar(widget.barName);
-  }
-
-  Future<Bar> fetchBar(String barName) async {
-    final response =
-        await http.get(Uri.parse('http://10.0.2.2:3000/api/bares/$barName'));
-    if (response.statusCode == 200) {
-      return Bar.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Error al cargar los datos del bar.');
-    }
-  }
+  BaresMain({required this.bar, required this.selectedImageUrl});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.barName),
+        title: Text('Detalle del bar - ${bar.name}'),
       ),
-      body: FutureBuilder<Bar>(
-        future: futureBar,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasData) {
-              Bar bar = snapshot.data!;
-            } else if (snapshot.hasError) {
-              return Center(child: Text("${snapshot.error}"));
-            }
-          }
-          return CircularProgressIndicator();
-        },
+      body: Column(
+        children: [
+          Image.network(selectedImageUrl,
+              fit: BoxFit.cover), // Muestra la imagen seleccionada al principio
+          Expanded(
+            child: GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+              ),
+              itemCount: bar.menu.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: <Widget>[
+                      Image.network(
+                        bar.menu[index].url,
+                        fit: BoxFit.cover,
+                      ),
+                      Text(bar.menu[index].name),
+                      Text('\$${bar.menu[index].price.toString()}'),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -79,13 +73,22 @@ class Bar {
 class Menu {
   final String name;
   final double price;
+  final String namePhoto;
+  final String url;
 
-  Menu({required this.name, required this.price});
+  Menu({
+    required this.name,
+    required this.price,
+    required this.namePhoto,
+    required this.url,
+  });
 
   factory Menu.fromJson(Map<String, dynamic> json) {
     return Menu(
       name: json['name'],
       price: json['price'].toDouble(),
+      namePhoto: json['namePhoto'],
+      url: json['url'],
     );
   }
 }

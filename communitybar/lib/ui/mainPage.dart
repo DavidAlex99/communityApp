@@ -54,8 +54,10 @@ class _MainPageState extends State<MainPage> {
                   ),
                   itemCount: posters.length,
                   itemBuilder: (context, index) {
-                    return _buildGridItem(
-                        posters[index].url, posters[index].namePhoto, context);
+                    Bar currentBar = bars
+                        .where((bar) => bar.poster.contains(posters[index]))
+                        .first;
+                    return _buildGridItem(currentBar, context);
                   },
                 ),
               );
@@ -69,14 +71,18 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _buildGridItem(
-      String imageUrl, String namePhoto, BuildContext context) {
+  Widget _buildGridItem(Bar bar, BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Aquí, la navegación puede ser un poco diferente ya que estás tratando con una imagen y no con un bar completo
-        // Tal vez quieras navegar a una vista detallada de la imagen, o simplemente quitar el GestureDetector si no quieres ninguna acción al tocar la imagen
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                BaresMain(bar: bar, selectedImageUrl: bar.poster[0].url),
+          ),
+        );
       },
-      child: Image.network(imageUrl, fit: BoxFit.cover),
+      child: Image.network(bar.poster[0].url, fit: BoxFit.cover),
     );
   }
 }
