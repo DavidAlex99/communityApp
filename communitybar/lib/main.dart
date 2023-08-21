@@ -1,3 +1,4 @@
+import 'package:communitybar/ui/anuncios.dart';
 import 'package:flutter/material.dart';
 import 'package:communitybar/ui/mainPage.dart';
 
@@ -120,6 +121,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     .push(MaterialPageRoute(builder: (context) => MainPage()));
               },
             ),
+            ElevatedButton(
+              child: Text("Go to Announcements"),
+              onPressed: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) => Announcements()));
+              },
+            )            
           ],
         ),
       ),
